@@ -74,18 +74,58 @@ impl<TX, RX> UART<TX, RX> {
         (self.tx, self.rx, self.uart)
     }
 
-    /// Wait to receive a `buffer` of data
-    ///
-    /// Returns the number of bytes placed into `buffer`, or an error.
-    pub async fn read(&mut self, buffer: &mut [u8]) -> Result<usize, Error> {
-        todo!()
+    fn clear_status(&mut self) {
+        ral::modify_reg!(
+            ral::lpuart,
+            self.uart,
+            STAT,
+            IDLE: IDLE_1,
+            OR: OR_1,
+            NF: NF_1,
+            FE: FE_1,
+            PF: PF_1
+        );
     }
 
-    /// Wait to send a `buffer` of data
-    ///
-    /// Returns the number of bytes sent from `buffer`, or an error.
-    pub async fn write(&mut self, buffer: &[u8]) -> Result<usize, Error> {
-        todo!()
+    /// Read a byte from the UART receiver
+    pub async fn read(&mut self) -> Result<u8, ReadError> {
+        use ral::lpuart::DATA::*;
+        let data = ral::read_reg!(ral::lpuart, self.uart, DATA);
+        if data & RXEMPT::mask != 0 {
+            Err(ReadError {
+                flags: ReadErrorFlags::WOULDBLOCK,
+                raw: 0,
+            })
+        } else {
+            let mut flags = ReadErrorFlags::empty();
+            flags.set(
+                ReadErrorFlags::OVERRUN,
+                ral::read_reg!(ral::lpuart, self.uart, STAT, OR == OR_1),
+            );
+            flags.set(ReadErrorFlags::PARITY, data & PARITYE::mask != 0);
+            flags.set(ReadErrorFlags::FRAME_ERROR, data & FRETSC::mask != 0);
+            flags.set(ReadErrorFlags::NOISY, data & NOISY::mask != 0);
+
+            let raw = (data & 0xFF) as u8;
+            self.clear_status();
+
+            if flags.is_empty() {
+                Ok(raw)
+            } else {
+                Err(ReadError { flags, raw })
+            }
+        }
+    }
+
+    fn flush(&mut self) {
+        while ral::read_reg!(ral::lpuart, self.uart, STAT, TDRE == TDRE_0) {}
+    }
+
+    /// Write a byte out of the UART peripheral
+    pub fn write(&mut self, word: u32) -> Result<(), Error> {
+        self.flush();
+        ral::write_reg!(ral::lpuart, self.uart, DATA, word as u32);
+        Ok(())
     }
 }
 
@@ -108,6 +148,31 @@ struct Timings {
 pub enum Error {
     /// There was an error when preparing the baud rate or clocks
     Clock,
+}
+
+bitflags::bitflags! {
+    /// Errors that may occur when reading data
+    pub struct ReadErrorFlags : u8 {
+        /// Data was received with noise
+        const NOISY = 1 << 7;
+        /// Parity error when receiving data
+        const PARITY = 1 << 6;
+        /// Framing error when receiving data
+        const FRAME_ERROR = 1 << 5;
+        /// Overrun occured, and we lost data in the shift register
+        const OVERRUN = 1 << 4;
+        /// Not a real flag
+        const WOULDBLOCK = 1 << 0;
+    }
+}
+
+/// Type that describes a read error
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ReadError {
+    /// Decribes the reason for the error
+    pub flags: ReadErrorFlags,
+    /// The raw value read, if you'd like to consider it
+    pub raw: u8,
 }
 
 /// Compute timings for a UART peripheral. Returns the timings,

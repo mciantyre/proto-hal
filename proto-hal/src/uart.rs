@@ -1,0 +1,186 @@
+//! UART serial driver
+
+use crate::{iomuxc, ral};
+
+/// UART Serial driver
+pub struct UART<TX, RX> {
+    uart: ral::lpuart::Instance,
+    tx: TX,
+    rx: RX,
+}
+
+impl<TX, RX, M> UART<TX, RX>
+where
+    TX: iomuxc::uart::Pin<Direction = iomuxc::uart::TX, Module = M>,
+    RX: iomuxc::uart::Pin<Direction = iomuxc::uart::RX, Module = M>,
+    M: iomuxc::consts::Unsigned,
+{
+    /// Create a new `UART` from a UART instance, TX and RX pins, and a DMA channel
+    ///
+    /// The baud rate of the returned `UART` is unspecified. Make sure you use [`set_baud`](#method.set_baud)
+    /// to properly configure the driver.
+    pub fn new(
+        uart: ral::lpuart::Instance,
+        mut tx: TX,
+        mut rx: RX,
+        _: &crate::ccm::UARTClock<ral::lpuart::Instance>,
+    ) -> UART<TX, RX> {
+        crate::iomuxc::uart::prepare(&mut tx);
+        crate::iomuxc::uart::prepare(&mut rx);
+
+        let mut uart = UART { uart, tx, rx };
+        let _ = uart.set_baud(9600);
+        ral::modify_reg!(ral::lpuart, uart.uart, CTRL, TE: TE_1, RE: RE_1);
+        uart
+    }
+}
+
+impl<TX, RX> UART<TX, RX> {
+    /// Set the serial baud rate
+    ///
+    /// If there is an error, the error is [`Error::Clock`](enum.UARTError.html#variant.Clock).
+    pub fn set_baud(&mut self, baud: u32) -> Result<(), Error> {
+        let timings = timings(UART_CLOCK, baud)?;
+        self.while_disabled(|this| {
+            ral::modify_reg!(
+                ral::lpuart,
+                this.uart,
+                BAUD,
+                OSR: u32::from(timings.osr),
+                SBR: u32::from(timings.sbr),
+                BOTHEDGE: u32::from(timings.both_edge)
+            );
+        });
+        Ok(())
+    }
+
+    fn while_disabled<F: FnMut(&mut Self) -> R, R>(&mut self, mut act: F) -> R {
+        ral::modify_reg!(
+            ral::lpuart,
+            self.uart,
+            FIFO,
+            TXFLUSH: TXFLUSH_1,
+            RXFLUSH: RXFLUSH_1
+        );
+        let (te, re) = ral::read_reg!(ral::lpuart, self.uart, CTRL, TE, RE);
+        ral::modify_reg!(ral::lpuart, self.uart, CTRL, TE: TE_0, RE: RE_0);
+        let res = act(self);
+        ral::modify_reg!(ral::lpuart, self.uart, CTRL, TE: te, RE: re);
+        res
+    }
+
+    /// Return the pins, RAL instance, and DMA channel that comprise the UART driver
+    pub fn release(self) -> (TX, RX, ral::lpuart::Instance) {
+        (self.tx, self.rx, self.uart)
+    }
+
+    /// Wait to receive a `buffer` of data
+    ///
+    /// Returns the number of bytes placed into `buffer`, or an error.
+    pub async fn read(&mut self, buffer: &mut [u8]) -> Result<usize, Error> {
+        todo!()
+    }
+
+    /// Wait to send a `buffer` of data
+    ///
+    /// Returns the number of bytes sent from `buffer`, or an error.
+    pub async fn write(&mut self, buffer: &[u8]) -> Result<usize, Error> {
+        todo!()
+    }
+}
+
+const UART_CLOCK: u32 = crate::ccm::UART_CLOCK_FREQUENCY_HZ;
+
+/// An opaque type that describes timing configurations
+struct Timings {
+    /// OSR register value. Accounts for the -1. May be written
+    /// directly to the register
+    osr: u8,
+    /// True if we need to set BOTHEDGE given the OSR value
+    both_edge: bool,
+    /// SBR value;
+    sbr: u16,
+}
+
+/// Errors propagated from a [`UART`](struct.UART.html) device
+#[non_exhaustive]
+#[derive(Debug)]
+pub enum Error {
+    /// There was an error when preparing the baud rate or clocks
+    Clock,
+}
+
+/// Compute timings for a UART peripheral. Returns the timings,
+/// or a string describing an error.
+fn timings(effective_clock: u32, baud: u32) -> Result<Timings, Error> {
+    //        effective_clock
+    // baud = ---------------
+    //         (OSR+1)(SBR)
+    //
+    // Solve for SBR:
+    //
+    //       effective_clock
+    // SBR = ---------------
+    //        (OSR+1)(baud)
+    //
+    // After selecting SBR, calculate effective baud.
+    // Minimize the error over all OSRs.
+
+    let base_clock: u32 = effective_clock.checked_div(baud).ok_or(Error::Clock)?;
+    let mut error = u32::max_value();
+    let mut best_osr = 16;
+    let mut best_sbr = 1;
+
+    for osr in 4..=32 {
+        let sbr = base_clock.checked_div(osr).ok_or(Error::Clock)?;
+        let sbr = sbr.max(1).min(8191);
+        let effective_baud = effective_clock.checked_div(osr * sbr).ok_or(Error::Clock)?;
+        let err = effective_baud.max(baud) - effective_baud.min(baud);
+        if err < error {
+            best_osr = osr;
+            best_sbr = sbr;
+            error = err
+        }
+    }
+
+    use core::convert::TryFrom;
+    Ok(Timings {
+        osr: u8::try_from(best_osr - 1).map_err(|_| Error::Clock)?,
+        sbr: u16::try_from(best_sbr).map_err(|_| Error::Clock)?,
+        both_edge: best_osr < 8,
+    })
+}
+
+/// ```no_run
+/// use imxrt_async_hal as hal;
+/// use hal::ral::{ccm::CCM, lpuart::LPUART2};
+///
+/// let hal::ccm::CCM {
+///     mut handle,
+///     uart_clock,
+///     ..
+/// } = CCM::take().map(hal::ccm::CCM::new).unwrap();
+/// let mut uart_clock = uart_clock.enable(&mut handle);
+/// let mut uart2 = LPUART2::take().unwrap();
+/// uart_clock.clock_gate(&mut uart2, hal::ccm::ClockGate::On);
+/// ```
+#[cfg(doctest)]
+struct ClockingWeakRalInstance;
+
+/// ```no_run
+/// use imxrt_async_hal as hal;
+/// use hal::ral::{ccm::CCM, lpuart::LPUART2};
+///
+/// let hal::ccm::CCM {
+///     mut handle,
+///     uart_clock,
+///     ..
+/// } = CCM::take().map(hal::ccm::CCM::new).unwrap();
+/// let mut uart_clock = uart_clock.enable(&mut handle);
+/// let mut uart2: hal::instance::UART<hal::iomuxc::consts::U2> = LPUART2::take()
+///     .and_then(hal::instance::uart)
+///     .unwrap();
+/// uart_clock.clock_gate(&mut uart2, hal::ccm::ClockGate::On);
+/// ```
+#[cfg(doctest)]
+struct ClockingStrongHalInstance;

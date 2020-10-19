@@ -46,9 +46,11 @@
 #![no_std]
 
 pub mod ccm;
+mod gpt;
 mod uart;
 pub use proto_ral as ral;
 
+pub use gpt::GPT;
 pub use uart::UART;
 
 pub mod iomuxc {

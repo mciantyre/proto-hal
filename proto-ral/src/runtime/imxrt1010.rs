@@ -1,4 +1,3 @@
-
 extern "C" {
     fn DMA0();
     fn DMA1();

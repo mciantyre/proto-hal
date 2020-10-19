@@ -1,7 +1,5 @@
 //! LPUART register fields
 
-#![allow(non_snake_case, non_upper_case_globals)]
-
 /// Version ID Register
 pub mod VERID {
 

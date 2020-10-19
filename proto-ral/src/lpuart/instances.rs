@@ -4,8 +4,6 @@
 //! required to build the RAL. They'll only be required when an end
 //! user wants to run a program on an embedded system.
 
-#![allow(non_snake_case, non_upper_case_globals)]
-#![allow(non_camel_case_types)]
 //! LPUART
 //!
 //! Used by: imxrt1061, imxrt1062, imxrt1064

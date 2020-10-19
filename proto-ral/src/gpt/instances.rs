@@ -1,8 +1,8 @@
 //! GPT
 
-pub use crate::imxrt106::peripherals::gpt::Instance;
-pub use crate::imxrt106::peripherals::gpt::{RegisterBlock, ResetValues};
-pub use crate::imxrt106::peripherals::gpt::{CNT, CR, ICR1, ICR2, IR, OCR1, OCR2, OCR3, PR, SR};
+pub use crate::gpt::Instance;
+pub use crate::gpt::{RegisterBlock, ResetValues};
+pub use crate::gpt::{CNT, CR, ICR1, ICR2, IR, OCR1, OCR2, OCR3, PR, SR};
 
 /// Access functions for the GPT1 peripheral instance
 #[cfg(any(feature = "imxrt1010", feature = "imxrt1060"))]
@@ -49,7 +49,7 @@ pub mod GPT1 {
     /// provides access to the peripheral's registers.    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPT1_TAKEN {
                 None
             } else {
@@ -67,7 +67,7 @@ pub mod GPT1 {
     /// already taken.    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPT1_TAKEN && inst.addr == INSTANCE.addr {
                 GPT1_TAKEN = false;
             } else {
@@ -145,7 +145,7 @@ pub mod GPT2 {
     /// provides access to the peripheral's registers.    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPT2_TAKEN {
                 None
             } else {
@@ -163,7 +163,7 @@ pub mod GPT2 {
     /// already taken.    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPT2_TAKEN && inst.addr == INSTANCE.addr {
                 GPT2_TAKEN = false;
             } else {

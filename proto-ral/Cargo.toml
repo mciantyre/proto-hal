@@ -9,6 +9,11 @@ edition = "2018"
 [dependencies]
 cortex-m = "0.6"
 
+[dependencies.bare-metal]
+optional = true
+version = "0.2.5"
+
 [features]
 imxrt1010 = []
 imxrt1060 = []
+rt = ["bare-metal"]

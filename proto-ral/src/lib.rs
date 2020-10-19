@@ -4,6 +4,11 @@
 pub mod gpt;
 pub mod lpuart;
 
+#[cfg(feature = "rt")]
+mod runtime;
+#[cfg(feature = "rt")]
+pub use runtime::*;
+
 use core::cell::UnsafeCell;
 
 /// A read-write register of type T.

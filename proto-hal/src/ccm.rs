@@ -1,7 +1,12 @@
 //! i.MX RT Clock Control Module (CCM)
 
+mod perclock;
 mod uart;
 
+pub use perclock::{
+    clock_gate_gpt, configure as configure_perclock, CLOCK_FREQUENCY_HZ as PERCLOCK_FREQUENCY_HZ,
+    GPT,
+};
 pub use uart::{
     clock_gate as clock_gate_uart, configure as configure_uart,
     CLOCK_FREQUENCY_HZ as UART_CLOCK_FREQUENCY_HZ, UART,
@@ -52,6 +57,10 @@ pub struct CCM {
     ///
     /// `Handle` is used throughout the HAL
     pub handle: Handle,
+    /// The periodic clock handle
+    ///
+    /// `perclock` is used for timers, including GPT and PIT timers
+    pub perclock: Disabled<PerClock<ral::gpt::Instance>>,
     /// The UART clock
     ///
     /// `uart_clock` is for UART peripherals.
@@ -70,6 +79,7 @@ impl CCM {
     pub const unsafe fn new() -> Self {
         CCM {
             handle: Handle(()),
+            perclock: Disabled(PerClock::assume_enabled()),
             uart_clock: Disabled(UARTClock::assume_enabled()),
         }
     }
@@ -96,6 +106,25 @@ const OSCILLATOR_FREQUENCY_HZ: u32 = 24_000_000;
 ///
 /// Call `enable` on your instance to enable the clock.
 pub struct Disabled<Clock>(Clock);
+
+/// The periodic clock root
+///
+/// `PerClock` is the input clock for GPT and PIT. It runs at
+/// 1MHz.
+pub struct PerClock<G>(PhantomData<G>);
+
+impl<G> PerClock<G> {
+    /// Assume that the clock is enabled, and acquire the enabled clock
+    ///
+    /// # Safety
+    ///
+    /// This may create an alias to memory that is mutably owned by another instance.
+    /// Users should only `assume_enabled` when configuring clocks through another
+    /// API.
+    pub const unsafe fn assume_enabled() -> Self {
+        Self(PhantomData)
+    }
+}
 
 /// The UART clock
 pub struct UARTClock<C>(PhantomData<C>);

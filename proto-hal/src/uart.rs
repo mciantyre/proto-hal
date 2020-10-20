@@ -122,7 +122,7 @@ impl<TX, RX> UART<TX, RX> {
     }
 
     /// Write a byte out of the UART peripheral
-    pub fn write(&mut self, word: u32) -> Result<(), Error> {
+    pub fn write(&mut self, word: u8) -> Result<(), Error> {
         self.flush();
         ral::write_reg!(ral::lpuart, self.uart, DATA, word as u32);
         Ok(())

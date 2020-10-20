@@ -52,7 +52,7 @@ mod uart;
 pub use proto_ral as ral;
 
 pub use gpio::{Input, Output, GPIO};
-pub use gpt::GPT;
+pub use gpt::{GPT, OutputCompareRegister};
 pub use uart::UART;
 
 pub mod iomuxc {

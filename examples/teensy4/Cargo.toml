@@ -12,6 +12,7 @@ Supports both the Teensy 4.0 and 4.1 boards.
 
 [lib]
 name = "t4_startup"
+path = "src/lib.rs"
 
 [dependencies]
 panic-halt = "0.2"

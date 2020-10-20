@@ -6,3 +6,7 @@ members = [
 exclude = [
     "examples/teensy4"
 ]
+
+[patch.crates-io.imxrt-iomuxc]
+rev = "14aa29e"
+git = "https://github.com/imxrt-rs/imxrt-rs"

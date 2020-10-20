@@ -1,0 +1,36 @@
+[package]
+name = "proto-hal-teensy4-examples"
+version = "0.1.0"
+authors = ["Ian McIntyre <ianpmcintyre@gmail.com>"]
+edition = "2018"
+publish = false # These are examples and should not be published
+description = """
+proto-hal examples that run on the Teensy 4
+
+Supports both the Teensy 4.0 and 4.1 boards.
+"""
+
+[lib]
+name = "t4_startup"
+
+[dependencies]
+panic-halt = "0.2"
+
+[dependencies.cortex-m-rt]
+version = "0.6.13"
+features = ["device"]
+
+[dependencies.proto-hal]
+path = "../../proto-hal"
+features = ["rt", "imxrt1060"]
+
+[dependencies.teensy4-fcb]
+version = "0.2"
+
+[dependencies.teensy4-pins]
+version = "0.1"
+
+# Don't optimize build dependencies, like proc macros.
+# Helps with build times.
+[profile.release.build-override]
+opt-level = 0

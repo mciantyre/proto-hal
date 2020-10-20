@@ -14,9 +14,9 @@ cortex-m = "0.6"
 path = "../proto-ral"
 
 [dependencies.imxrt-iomuxc]
-version = "0.2"
+version = "0.1"
 
 [features]
-imxrt1010 = ["proto-ral/imxrt1010", "imxrt-iomuxc/imxrt1010"]
-imxrt1060 = ["proto-ral/imxrt1060", "imxrt-iomuxc/imxrt1060"]
+imxrt1010 = ["proto-ral/imxrt1010", "imxrt-iomuxc/imxrt101x"]
+imxrt1060 = ["proto-ral/imxrt1060", "imxrt-iomuxc/imxrt106x"]
 rt = ["proto-ral/rt"]

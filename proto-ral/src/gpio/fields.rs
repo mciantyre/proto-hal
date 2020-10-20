@@ -1,4 +1,3 @@
-
 /// GPIO data register
 pub mod DR {
 
@@ -611,41 +610,4 @@ pub mod DR_TOGGLE {
         /// Read-write values (empty)
         pub mod RW {}
     }
-}
-#[repr(C)]
-pub struct RegisterBlock {
-    /// GPIO data register
-    pub DR: RWRegister<u32>,
-
-    /// GPIO direction register
-    pub GDIR: RWRegister<u32>,
-
-    /// GPIO pad status register
-    pub PSR: RORegister<u32>,
-
-    /// GPIO interrupt configuration register1
-    pub ICR1: RWRegister<u32>,
-
-    /// GPIO interrupt configuration register2
-    pub ICR2: RWRegister<u32>,
-
-    /// GPIO interrupt mask register
-    pub IMR: RWRegister<u32>,
-
-    /// GPIO interrupt status register
-    pub ISR: RWRegister<u32>,
-
-    /// GPIO edge select register
-    pub EDGE_SEL: RWRegister<u32>,
-
-    _reserved1: [u32; 25],
-
-    /// GPIO data register SET
-    pub DR_SET: WORegister<u32>,
-
-    /// GPIO data register CLEAR
-    pub DR_CLEAR: WORegister<u32>,
-
-    /// GPIO data register TOGGLE
-    pub DR_TOGGLE: WORegister<u32>,
 }

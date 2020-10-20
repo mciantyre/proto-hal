@@ -46,10 +46,12 @@
 #![no_std]
 
 pub mod ccm;
+mod gpio;
 mod gpt;
 mod uart;
 pub use proto_ral as ral;
 
+pub use gpio::{Input, Output, GPIO};
 pub use gpt::GPT;
 pub use uart::UART;
 

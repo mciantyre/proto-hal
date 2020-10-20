@@ -3,3 +3,10 @@ members = [
     "proto-hal",
     "proto-ral"
 ]
+exclude = [
+    "examples/teensy4"
+]
+
+[patch.crates-io.imxrt-iomuxc]
+git = "https://github.com/imxrt-rs/imxrt-rs"
+branch = "clear-chip-ids"

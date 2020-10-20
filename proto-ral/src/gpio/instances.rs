@@ -1,15 +1,12 @@
-
 pub use crate::gpio::Instance;
 pub use crate::gpio::{RegisterBlock, ResetValues};
-pub use crate::gpio::{
-    DR, DR_CLEAR, DR_SET, DR_TOGGLE, EDGE_SEL, GDIR, ICR1, ICR2, IMR, ISR, PSR,
-};
+pub use crate::gpio::{DR, DR_CLEAR, DR_SET, DR_TOGGLE, EDGE_SEL, GDIR, ICR1, ICR2, IMR, ISR, PSR};
 
 /// Access functions for the GPIO1 peripheral instance
 #[cfg(any(feature = "imxrt1010", feature = "imxrt1060"))]
 pub mod GPIO1 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x401b8000,
         _marker: ::core::marker::PhantomData,
@@ -28,7 +25,7 @@ pub mod GPIO1 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -48,7 +45,7 @@ pub mod GPIO1 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO1_TAKEN {
                 None
             } else {
@@ -66,7 +63,7 @@ pub mod GPIO1 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO1_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO1_TAKEN = false;
             } else {
@@ -102,8 +99,8 @@ pub const GPIO1: *const RegisterBlock = 0x401b8000 as *const _;
 /// Access functions for the GPIO2 peripheral instance
 #[cfg(any(feature = "imxrt1010", feature = "imxrt1060"))]
 pub mod GPIO2 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x401bc000,
         _marker: ::core::marker::PhantomData,
@@ -122,7 +119,7 @@ pub mod GPIO2 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -142,7 +139,7 @@ pub mod GPIO2 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO2_TAKEN {
                 None
             } else {
@@ -160,7 +157,7 @@ pub mod GPIO2 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO2_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO2_TAKEN = false;
             } else {
@@ -198,8 +195,8 @@ pub const GPIO2: *const RegisterBlock = 0x42000000 as *const _;
 /// Access functions for the GPIO3 peripheral instance
 #[cfg(any(feature = "imxrt1060"))]
 pub mod GPIO3 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x401c0000,
         _marker: ::core::marker::PhantomData,
@@ -218,7 +215,7 @@ pub mod GPIO3 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -238,7 +235,7 @@ pub mod GPIO3 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO3_TAKEN {
                 None
             } else {
@@ -256,7 +253,7 @@ pub mod GPIO3 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO3_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO3_TAKEN = false;
             } else {
@@ -292,8 +289,8 @@ pub const GPIO3: *const RegisterBlock = 0x401c0000 as *const _;
 /// Access functions for the GPIO4 peripheral instance
 #[cfg(any(feature = "imxrt1060"))]
 pub mod GPIO4 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x401c4000,
         _marker: ::core::marker::PhantomData,
@@ -312,7 +309,7 @@ pub mod GPIO4 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -332,7 +329,7 @@ pub mod GPIO4 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO4_TAKEN {
                 None
             } else {
@@ -350,7 +347,7 @@ pub mod GPIO4 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO4_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO4_TAKEN = false;
             } else {
@@ -386,8 +383,8 @@ pub const GPIO4: *const RegisterBlock = 0x401c4000 as *const _;
 /// Access functions for the GPIO5 peripheral instance
 #[cfg(any(feature = "imxrt1010", feature = "imxrt1060"))]
 pub mod GPIO5 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x400c0000,
         _marker: ::core::marker::PhantomData,
@@ -406,7 +403,7 @@ pub mod GPIO5 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -426,7 +423,7 @@ pub mod GPIO5 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO5_TAKEN {
                 None
             } else {
@@ -444,7 +441,7 @@ pub mod GPIO5 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO5_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO5_TAKEN = false;
             } else {
@@ -480,8 +477,8 @@ pub const GPIO5: *const RegisterBlock = 0x400c0000 as *const _;
 /// Access functions for the GPIO6 peripheral instance
 #[cfg(any(feature = "imxrt1060"))]
 pub mod GPIO6 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x42000000,
         _marker: ::core::marker::PhantomData,
@@ -500,7 +497,7 @@ pub mod GPIO6 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -520,7 +517,7 @@ pub mod GPIO6 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO6_TAKEN {
                 None
             } else {
@@ -538,7 +535,7 @@ pub mod GPIO6 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO6_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO6_TAKEN = false;
             } else {
@@ -574,8 +571,8 @@ pub const GPIO6: *const RegisterBlock = 0x42000000 as *const _;
 /// Access functions for the GPIO7 peripheral instance
 #[cfg(any(feature = "imxrt1060"))]
 pub mod GPIO7 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x42004000,
         _marker: ::core::marker::PhantomData,
@@ -594,7 +591,7 @@ pub mod GPIO7 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -614,7 +611,7 @@ pub mod GPIO7 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO7_TAKEN {
                 None
             } else {
@@ -632,7 +629,7 @@ pub mod GPIO7 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO7_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO7_TAKEN = false;
             } else {
@@ -668,8 +665,8 @@ pub const GPIO7: *const RegisterBlock = 0x42004000 as *const _;
 /// Access functions for the GPIO8 peripheral instance
 #[cfg(any(feature = "imxrt1060"))]
 pub mod GPIO8 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x42008000,
         _marker: ::core::marker::PhantomData,
@@ -688,7 +685,7 @@ pub mod GPIO8 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -708,7 +705,7 @@ pub mod GPIO8 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO8_TAKEN {
                 None
             } else {
@@ -726,7 +723,7 @@ pub mod GPIO8 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO8_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO8_TAKEN = false;
             } else {
@@ -762,8 +759,8 @@ pub const GPIO8: *const RegisterBlock = 0x42008000 as *const _;
 /// Access functions for the GPIO9 peripheral instance
 #[cfg(any(feature = "imxrt1060"))]
 pub mod GPIO9 {
-    use super::ResetValues;    
-    use super::Instance;    
+    use super::Instance;
+    use super::ResetValues;
     const INSTANCE: Instance = Instance {
         addr: 0x4200c000,
         _marker: ::core::marker::PhantomData,
@@ -782,7 +779,7 @@ pub mod GPIO9 {
         DR_SET: 0x00000000,
         DR_CLEAR: 0x00000000,
         DR_TOGGLE: 0x00000000,
-    };    
+    };
     #[allow(renamed_and_removed_lints)]
     #[allow(private_no_mangle_statics)]
     #[no_mangle]
@@ -802,7 +799,7 @@ pub mod GPIO9 {
     /// provides access to the peripheral's registers    
     #[inline]
     pub fn take() -> Option<Instance> {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO9_TAKEN {
                 None
             } else {
@@ -820,7 +817,7 @@ pub mod GPIO9 {
     /// already taken    
     #[inline]
     pub fn release(inst: Instance) {
-        external_cortex_m::interrupt::free(|_| unsafe {
+        cortex_m::interrupt::free(|_| unsafe {
             if GPIO9_TAKEN && inst.addr == INSTANCE.addr {
                 GPIO9_TAKEN = false;
             } else {

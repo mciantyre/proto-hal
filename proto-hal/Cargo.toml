@@ -8,14 +8,15 @@ edition = "2018"
 
 [dependencies]
 bitflags = "1.0"
+cortex-m = "0.6"
 
 [dependencies.proto-ral]
 path = "../proto-ral"
 
 [dependencies.imxrt-iomuxc]
-git = "https://github.com/imxrt-rs/imxrt-rs"
-branch = "clear-chip-ids"
+version = "0.2"
 
 [features]
 imxrt1010 = ["proto-ral/imxrt1010", "imxrt-iomuxc/imxrt1010"]
 imxrt1060 = ["proto-ral/imxrt1060", "imxrt-iomuxc/imxrt1060"]
+rt = ["proto-ral/rt"]

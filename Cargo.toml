@@ -4,6 +4,7 @@ members = [
     "proto-ral"
 ]
 exclude = [
+    "examples/delay",
     "examples/teensy4"
 ]
 

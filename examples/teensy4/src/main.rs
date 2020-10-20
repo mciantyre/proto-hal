@@ -61,23 +61,8 @@ fn main() -> ! {
     led.set();
 
     loop {
-        delay(&mut timer);
+        delay::delay(&mut timer);
         led.toggle();
         serial.write(b'X').unwrap();
     }
-}
-
-fn delay(timer: &mut hal::GPT) {
-    const FIVE_HUNDRED_MILLISECONDS_IN_TICKS: u32 = 100000;
-    const OCR: hal::OutputCompareRegister = hal::OutputCompareRegister::One;
-
-    timer.set_enable(false);
-    let count = timer.output_compare_count(OCR);
-    let count = count.wrapping_add(FIVE_HUNDRED_MILLISECONDS_IN_TICKS);
-    timer.set_output_compare_count(OCR, count);
-    timer.set_enable(true);
-    let mut status = timer.output_compare_status(OCR);
-    while !status.is_set() {}
-    status.clear();
-    timer.set_enable(false);
 }

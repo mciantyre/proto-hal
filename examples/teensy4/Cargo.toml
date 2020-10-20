@@ -25,6 +25,9 @@ features = ["device"]
 path = "../../proto-hal"
 features = ["rt", "imxrt1060"]
 
+[dependencies.delay]
+path = "../delay"
+
 [dependencies.teensy4-fcb]
 version = "0.2"
 
